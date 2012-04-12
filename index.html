@@ -1,0 +1,38 @@
+<img id="cursor" src="osx_cursor.png" style="display: none; opacity: 0.5; position: absolute;">
+<script src="jquery.min.js"></script>
+<script>
+  $(function() {
+    var count;
+    var timer;
+    var last = {
+      x: 0,
+      y: 0
+    };
+    $('body').mousemove(function(e) {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      var offset = {
+        x: e.pageX - last.x,
+        y: e.pageY - last.y
+      };
+      $('.shadow').remove();
+      count = Math.max(Math.abs(offset.x), Math.abs(offset.y)) / 10;
+      count = 10;
+      for (var i = 0; i < count; i++) {
+        $('#cursor').clone()
+          .appendTo('body')
+          .addClass('shadow')
+          .css('display', 'inline')
+          .css('left', (e.pageX - i * offset.x / count - 2) + 'px')
+          .css('opacity', 0.5)
+          .css('top', (e.pageY - i * offset.y / count - 2) + 'px');
+      }
+      last.x = e.pageX;
+      last.y = e.pageY;
+      timer = setTimeout(function() {
+        $('.shadow').remove();
+      }, 100);
+    });
+  });
+</script>
