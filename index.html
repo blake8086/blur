@@ -1,9 +1,26 @@
+<title>move your mouse</title>
 <img id="cursor" src="osx_cursor.png" style="display: none; opacity: 0.5; position: absolute;">
+<canvas id="canvas" style="left: 0; position: absolute; top: 0;" height="100" width="100"></canvas>
 <script src="jquery.min.js"></script>
 <script>
   $(function() {
     var count;
     var timer;
+    //the dark black heart of the mouse cursor
+    var coreOffsets = [
+      {x: 2, y: 2},
+      {x: 9, y: 9},
+      {x: 8, y: 15},
+      {x: 1, y: 14}
+    ];
+    //the hard white shell of the mouse cursor
+    var outlineOffsets = [
+      {x: 1, y: 0},
+      {x: 11, y: 10},
+      {x: 9, y: 15},
+      {x: 8, y: 16},
+      {x: 1, y: 14}
+    ];
     var last = {
       x: 0,
       y: 0
@@ -16,23 +33,44 @@
         x: e.pageX - last.x,
         y: e.pageY - last.y
       };
-      $('.shadow').remove();
-      count = Math.max(Math.abs(offset.x), Math.abs(offset.y)) / 10;
-      count = 10;
-      for (var i = 0; i < count; i++) {
-        $('#cursor').clone()
-          .appendTo('body')
-          .addClass('shadow')
-          .css('display', 'inline')
-          .css('left', (e.pageX - i * offset.x / count - 2) + 'px')
-          .css('opacity', 0.5)
-          .css('top', (e.pageY - i * offset.y / count - 2) + 'px');
+
+      document.getElementById('canvas').height = window.innerHeight;
+      document.getElementById('canvas').width = window.innerWidth;
+      var c = document.getElementById('canvas').getContext('2d');
+
+      for (var i = 0; i < coreOffsets.length; i++) {
+        var off1 = coreOffsets[i];
+        var off2 = coreOffsets[(i + 1) % coreOffsets.length];
+        c.beginPath();
+        c.fillStyle = "rgba(0, 0, 0, 0.25)";
+        c.moveTo(last.x + off1.x, last.y + off1.y);
+        c.lineTo(last.x + off2.x, last.y + off2.y);
+        c.lineTo(e.pageX + off2.x, e.pageY + off2.y);
+        c.lineTo(e.pageX + off1.x, e.pageY + off1.y);
+        c.lineTo(last.x + off1.x, last.y + off1.y);
+        c.fill();
+        c.closePath();
       }
+
       last.x = e.pageX;
       last.y = e.pageY;
+
       timer = setTimeout(function() {
-        $('.shadow').remove();
-      }, 100);
+        //document.getElementById('canvas').width = 799;
+        //document.getElementById('canvas').width = 800;
+      }, 20);
     });
+    document.getElementById('canvas').height = window.innerHeight;
+    document.getElementById('canvas').width = window.innerWidth;
   });
+
 </script>
+
+<!--
+coordinates (clockwise):
+black area
+(2, 2), (9, 9), (8, 15), (2, 12)
+white area
+(1, 0), (11, 10), (9, 15), (8, 16), (1, 14)
+
+-->
